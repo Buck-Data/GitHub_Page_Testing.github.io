@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kasse – GTM Lernshop</title>
+<script>window.dataLayer = window.dataLayer || [];</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-logo" href="index.html">🛍️ GTM Lernshop</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Start</a></li>
+      <li><a href="produkte.html">Shop</a></li>
+      <li><a href="kontakt.html">Kontakt</a></li>
+      <li><a href="warenkorb.html">Warenkorb <span id="cart-count" class="cart-badge" style="display:none">0</span></a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="container" style="margin-top:2rem;">
+  <h1 class="section-title">Kasse</h1>
+  <div id="checkout-content"></div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div>
+      <p>GTM Lernshop – Demo-Seite zum Üben von GA4 &amp; Google Tag Manager.<br>Keine echten Produkte, keine echte Bestellung.</p>
+    </div>
+    <div>
+      <form id="newsletter-form" class="newsletter-form" novalidate>
+        <input type="email" id="newsletter-email" placeholder="deine@email.de" required>
+        <button type="submit" class="btn btn-primary">Newsletter abonnieren</button>
+      </form>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/products.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/analytics.js"></script>
+<script>
+  const content = document.getElementById("checkout-content");
+  const items = getCartWithProductData();
+
+  const SHIPPING_COSTS = { standard: 4.90, express: 9.90 };
+  const TAX_RATE = 0.19;
+
+  if (items.length === 0) {
+    content.innerHTML = `
+      <div class="empty-state">
+        <p>Dein Warenkorb ist leer – du kannst so nicht zur Kasse gehen.</p>
+        <a href="produkte.html" class="btn btn-primary">Jetzt einkaufen</a>
+      </div>`;
+  } else {
+    content.innerHTML = `
+      <div class="checkout-grid">
+        <form id="checkout-form" novalidate>
+          <div class="form-group">
+            <label for="full-name">Name</label>
+            <input type="text" id="full-name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">E-Mail</label>
+            <input type="email" id="email" required>
+          </div>
+          <div class="form-group">
+            <label for="address">Adresse</label>
+            <input type="text" id="address" required>
+          </div>
+
+          <fieldset>
+            <legend>Versandart</legend>
+            <label class="radio-option"><input type="radio" name="shipping" value="standard" checked> Standard (2-4 Tage) – 4,90 €</label>
+            <label class="radio-option"><input type="radio" name="shipping" value="express"> Express (1 Tag) – 9,90 €</label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Zahlungsart</legend>
+            <label class="radio-option"><input type="radio" name="payment" value="Kreditkarte" checked> Kreditkarte</label>
+            <label class="radio-option"><input type="radio" name="payment" value="PayPal"> PayPal</label>
+            <label class="radio-option"><input type="radio" name="payment" value="Rechnung"> Rechnung</label>
+          </fieldset>
+
+          <button type="submit" class="btn btn-primary btn-block">Kostenpflichtig bestellen (Demo)</button>
+        </form>
+
+        <div class="cart-summary" id="checkout-summary" style="margin-left:0;"></div>
+      </div>
+    `;
+
+    function renderSummary() {
+      const shipping = SHIPPING_COSTS[document.querySelector('input[name="shipping"]:checked').value];
+      const subtotal = getCartTotal();
+      const tax = subtotal * TAX_RATE;
+      const total = subtotal + shipping;
+
+      document.getElementById("checkout-summary").innerHTML = `
+        <div class="cart-summary-row"><span>Zwischensumme</span><span>${subtotal.toFixed(2)} €</span></div>
+        <div class="cart-summary-row"><span>Versand</span><span>${shipping.toFixed(2)} €</span></div>
+        <div class="cart-summary-row"><span>enthaltene MwSt. (19%)</span><span>${tax.toFixed(2)} €</span></div>
+        <div class="cart-summary-row cart-summary-total"><span>Gesamt</span><span>${total.toFixed(2)} €</span></div>
+      `;
+      return { shipping, subtotal, tax, total };
+    }
+
+    renderSummary();
+
+    document.querySelectorAll('input[name="shipping"]').forEach(radio => {
+      radio.addEventListener("change", () => {
+        const { subtotal } = renderSummary();
+        trackEcommerceEvent("add_shipping_info", {
+          currency: CURRENCY,
+          value: subtotal,
+          shipping_tier: radio.value,
+          items: items.map(i => toGa4Item(i, i.quantity))
+        });
+      });
+    });
+
+    document.querySelectorAll('input[name="payment"]').forEach(radio => {
+      radio.addEventListener("change", () => {
+        const { subtotal } = renderSummary();
+        trackEcommerceEvent("add_payment_info", {
+          currency: CURRENCY,
+          value: subtotal,
+          payment_type: radio.value,
+          items: items.map(i => toGa4Item(i, i.quantity))
+        });
+      });
+    });
+
+    document.getElementById("checkout-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const { shipping, subtotal, tax, total } = renderSummary();
+      const order = {
+        transaction_id: "DEMO-" + Date.now(),
+        currency: CURRENCY,
+        value: total,
+        tax: tax,
+        shipping: shipping,
+        payment_type: document.querySelector('input[name="payment"]:checked').value,
+        shipping_tier: document.querySelector('input[name="shipping"]:checked').value,
+        items: items.map(i => toGa4Item(i, i.quantity))
+      };
+      sessionStorage.setItem("gtm_demo_last_order", JSON.stringify(order));
+      window.location.href = "bestellbestaetigung.html";
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const { subtotal } = renderSummary();
+      trackEcommerceEvent("begin_checkout", {
+        currency: CURRENCY,
+        value: subtotal,
+        items: items.map(i => toGa4Item(i, i.quantity))
+      });
+    });
+  }
+</script>
+</body>
+</html>

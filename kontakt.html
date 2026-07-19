@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kontakt – GTM Lernshop</title>
+<script>window.dataLayer = window.dataLayer || [];</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="nav-logo" href="index.html">🛍️ GTM Lernshop</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Start</a></li>
+      <li><a href="produkte.html">Shop</a></li>
+      <li><a href="kontakt.html"><strong>Kontakt</strong></a></li>
+      <li><a href="warenkorb.html">Warenkorb <span id="cart-count" class="cart-badge" style="display:none">0</span></a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="container" style="margin-top:2rem; max-width:600px;">
+  <h1 class="section-title">Kontakt</h1>
+  <p>Fragen zu deiner Demo-Bestellung? Schreib uns (es antwortet niemand, das ist ein Übungsformular 🙂).</p>
+
+  <form id="contact-form" novalidate>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" required>
+    </div>
+    <div class="form-group">
+      <label for="email">E-Mail</label>
+      <input type="email" id="email" required>
+    </div>
+    <div class="form-group">
+      <label for="topic">Thema</label>
+      <select id="topic">
+        <option value="Bestellung">Bestellung</option>
+        <option value="Rückgabe">Rückgabe</option>
+        <option value="Sonstiges">Sonstiges</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="message">Nachricht</label>
+      <textarea id="message" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Absenden</button>
+  </form>
+
+  <hr style="margin:2.5rem 0; border:none; border-top:1px solid var(--color-border);">
+
+  <h2 class="section-title" style="font-size:1.1rem;">Test-Links für Outbound- & Download-Tracking</h2>
+  <p style="font-size:0.9rem;">
+    Diese Links lösen automatisch <code>outbound_click</code>- bzw. <code>file_download</code>-Events aus (siehe <a href="assets/js/analytics.js">analytics.js</a>):
+  </p>
+  <ul>
+    <li><a href="https://support.google.com/tagmanager" target="_blank" rel="noopener">Externer Link: GTM-Hilfe (Google)</a></li>
+    <li><a href="assets/files/agb-demo.pdf">Download: AGB (Demo-PDF)</a></li>
+  </ul>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div>
+      <p>GTM Lernshop – Demo-Seite zum Üben von GA4 &amp; Google Tag Manager.<br>Keine echten Produkte, keine echte Bestellung.</p>
+    </div>
+    <div>
+      <form id="newsletter-form" class="newsletter-form" novalidate>
+        <input type="email" id="newsletter-email" placeholder="deine@email.de" required>
+        <button type="submit" class="btn btn-primary">Newsletter abonnieren</button>
+      </form>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/products.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/analytics.js"></script>
+<script>
+  document.getElementById("contact-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    trackEvent({
+      event: "generate_lead",
+      form_name: "contact",
+      lead_type: document.getElementById("topic").value
+    });
+    trackEvent({ event: "form_submit", form_name: "contact" });
+    showToast("Danke für deine Nachricht (Demo) – es wurde nichts verschickt.");
+    e.target.reset();
+  });
+</script>
+</body>
+</html>
