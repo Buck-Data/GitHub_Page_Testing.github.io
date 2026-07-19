@@ -10,11 +10,19 @@ Einfach `index.html` im Browser öffnen (funktioniert auch ohne lokalen Server, 
 
 ## Setup: GTM & GA4 verbinden
 
+Dieses Repo ist bereits fest verdrahtet mit:
+- **GTM-Container** `GTM-TKRJS2MG` (Kopf-Snippet + `<noscript>`-Snippet auf jeder Seite)
+- **GA4 direkt via gtag.js** mit Measurement-ID `G-CCVJFG1BSR` (ebenfalls im `<head>` jeder Seite)
+
+Das heißt: GA4 bekommt aktuell Daten über **zwei Wege gleichzeitig** – direkt per gtag.js *und* über GTM, sobald du dort zusätzlich eine eigene GA4-Konfiguration-Tag anlegst. Für's Ausprobieren/Debuggen ist das unkritisch, führt bei paralleler GA4-Konfiguration in GTM aber zu doppelten `page_view`-Hits. Für einen "sauberen" Aufbau nur über GTM den direkten gtag.js-Block (in jeder HTML-Datei der Block mit `<!-- Google tag (gtag.js) -->`) wieder entfernen.
+
+Falls du eine eigene Kopie mit deinem eigenen Container/Property betreiben willst:
+
 1. **GTM-Container anlegen**: [tagmanager.google.com](https://tagmanager.google.com) → Konto/Container für "Web" erstellen. Du bekommst eine ID im Format `GTM-XXXXXXX`.
-2. **ID in allen Dateien eintragen**: Jede HTML-Seite enthält den Platzhalter `GTM-XXXXXXX` zweimal (Kopf-Snippet + `<noscript>`-Snippet direkt nach `<body>`). Ersetze ihn überall durch deine echte ID, z.B. per Suchen-und-Ersetzen im Editor, oder mit diesem PowerShell-Einzeiler im Projektordner:
+2. **ID in allen Dateien eintragen**: Jede HTML-Seite enthält die GTM-ID zweimal (Kopf-Snippet + `<noscript>`-Snippet direkt nach `<body>`). Ersetze `GTM-TKRJS2MG` überall durch deine eigene ID, z.B. per Suchen-und-Ersetzen im Editor, oder mit diesem PowerShell-Einzeiler im Projektordner:
    ```powershell
    Get-ChildItem -Filter *.html | ForEach-Object {
-     (Get-Content $_.FullName -Raw) -replace 'GTM-XXXXXXX', 'GTM-DEINE-ID' | Set-Content $_.FullName -Encoding utf8
+     (Get-Content $_.FullName -Raw) -replace 'GTM-TKRJS2MG', 'GTM-DEINE-ID' | Set-Content $_.FullName -Encoding utf8
    }
    ```
 3. **GA4-Property anlegen**: [analytics.google.com](https://analytics.google.com) → Property erstellen → Datenstrom "Web" → Measurement-ID (`G-XXXXXXX`) notieren.
