@@ -5,7 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GTM Lernshop – Startseite</title>
 <meta name="description" content="Demo-Onlineshop zum Üben von Google Tag Manager und GA4.">
-<script>window.dataLayer = window.dataLayer || [];</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CCVJFG1BSR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-CCVJFG1BSR');
+</script>
+
 <!-- Google Tag Manager -->
 <!-- WICHTIG: Ersetze GTM-XXXXXXX in ALLEN HTML-Dateien dieses Projekts mit deiner echten
      GTM-Container-ID (siehe README.md, Abschnitt "Setup"). -->
